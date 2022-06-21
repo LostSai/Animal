@@ -1,0 +1,22 @@
+syntax = "proto3";
+package tutorial;
+
+message Animal{
+    int32 id = 1;
+    AnimalType type = 2;
+    int64 curTime = 3;
+    string name = 4;
+    int32 icon = 5;
+    int32 count = 6;
+    string desc = 7;
+
+    enum AnimalType {
+        PIG = 0;
+        SHEEP = 1;
+        BULL = 2;
+    }
+}
+
+message AnimalList{
+    repeated Animal animals = 1;
+}
