@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 // 显示确认对话框
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                 AlertDialog alert = builder.setTitle("删除提示：")
-                        .setMessage("即将删除所有食品数据")
+                        .setMessage("即将删除所有数据")
                         .setNegativeButton("取消", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
@@ -152,21 +152,42 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     }
 
     @Override
-    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-        Log.i(TAG, "onItemClick: position=" + position + ",id=" + id);
-        parent.getAdapter().getItem(position);
+    public boolean onItemLongClick(AdapterView<?> parent, final View view, final int position, long id) {
+        Log.i(TAG, "onItemLongClick: position=" + position + ",id=" + id);
+        // 显示确认对话框
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        AlertDialog alert = builder.setTitle("删除提示：")
+                .setMessage("是否删除该条数据？")
+                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Toast.makeText(MainActivity.this, "你点击了取消按钮~", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Toast.makeText(MainActivity.this, "你点击了确定按钮~", Toast.LENGTH_SHORT).show();
+                        deleteAnimal(view, position);
+                    }
+                }).create();             //创建AlertDialog对象
+        alert.show();                    //显示对话框
+        return true;
+    }
+
+    private void deleteAnimal(View view, int position){
+        Log.i(TAG, "deleteAnimal: position=" + position);
         TextView tv = view.findViewById(R.id.txt_fId);
         if (tv == null){
-            return false;
+            return;
         }
 
-        Log.i(TAG, "onItemClick: ");
+        String key = tv.getText().toString();
+        DbUtil.delete(key);
 
-        //animalService.deleteObj(Integer.valueOf(tv.getText().toString()));
         myAdapter.remove(position);
         list_food.setAdapter(myAdapter);
         refreshSize();
-        return true;
     }
 
     private void addAnimal(Intent data) throws InvalidProtocolBufferException {
@@ -178,7 +199,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             int sIndex = DbUtil.getNextIndex();
             DbUtil.writeDB("" + sIndex, bytes);
             DbUtil.writeDB(LAST_INDEX, ("" + sIndex).getBytes(charset));
-            //animalService.saveObj(f);
             refreshSize();
         }
     }

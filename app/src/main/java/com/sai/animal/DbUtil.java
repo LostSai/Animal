@@ -101,7 +101,7 @@ public class DbUtil {
         iterator.close();//must be
     }
 
-    private void delete(String key){
+    public static void delete(String key){
         Log.i(TAG, "delete");
         //delete
         db.delete(key.getBytes(charset));
